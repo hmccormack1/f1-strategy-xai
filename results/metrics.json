@@ -1,0 +1,412 @@
+{
+  "split": {
+    "train": [
+      2023,
+      2024
+    ],
+    "test": 2025,
+    "shift": 2026
+  },
+  "data": {
+    "races_per_season": {
+      "2023": 22,
+      "2024": 24,
+      "2025": 24,
+      "2026": 16
+    },
+    "rows_per_season": {
+      "2023": 23442,
+      "2024": 25755,
+      "2025": 25415,
+      "2026": 17479
+    },
+    "pit_label_rate_per_season": {
+      "2023": 0.0927,
+      "2024": 0.0846,
+      "2025": 0.0839,
+      "2026": 0.0955
+    },
+    "features": [
+      "tyre_life",
+      "compound",
+      "race_progress",
+      "laps_remaining",
+      "stint",
+      "has_two_dry",
+      "position",
+      "gap_ahead",
+      "gap_behind",
+      "safety_car",
+      "vsc",
+      "sc_upcoming",
+      "yellow",
+      "pace_delta",
+      "field_pitted_last2",
+      "ahead_pitted",
+      "temp_change",
+      "rainfall"
+    ]
+  },
+  "metrics": {
+    "baseline": {
+      "2025": {
+        "n_rows": 25415,
+        "pit_rate": 0.0839,
+        "pr_auc": 0.1497,
+        "roc_auc": 0.6846,
+        "precision": 0.1407,
+        "recall": 0.5816,
+        "f1": 0.2265
+      },
+      "2026": {
+        "n_rows": 17479,
+        "pit_rate": 0.0955,
+        "pr_auc": 0.1718,
+        "roc_auc": 0.6934,
+        "precision": 0.1604,
+        "recall": 0.5303,
+        "f1": 0.2462
+      },
+      "threshold": 0.1172
+    },
+    "xgboost": {
+      "2025": {
+        "n_rows": 25415,
+        "pit_rate": 0.0839,
+        "pr_auc": 0.3131,
+        "roc_auc": 0.8122,
+        "precision": 0.2723,
+        "recall": 0.5333,
+        "f1": 0.3605
+      },
+      "2026": {
+        "n_rows": 17479,
+        "pit_rate": 0.0955,
+        "pr_auc": 0.3313,
+        "roc_auc": 0.7871,
+        "precision": 0.2971,
+        "recall": 0.4985,
+        "f1": 0.3723
+      },
+      "threshold": 0.2075
+    },
+    "ebm": {
+      "2025": {
+        "n_rows": 25415,
+        "pit_rate": 0.0839,
+        "pr_auc": 0.2917,
+        "roc_auc": 0.7901,
+        "precision": 0.2778,
+        "recall": 0.4817,
+        "f1": 0.3524
+      },
+      "2026": {
+        "n_rows": 17479,
+        "pit_rate": 0.0955,
+        "pr_auc": 0.3088,
+        "roc_auc": 0.7778,
+        "precision": 0.3029,
+        "recall": 0.4578,
+        "f1": 0.3646
+      },
+      "threshold": 0.233
+    }
+  },
+  "agreement": {
+    "global_rank_spearman": 0.946,
+    "local_top3_jaccard": 0.495,
+    "shape_correlation": {
+      "tyre_life": 0.998,
+      "compound": 0.843,
+      "race_progress": 0.976,
+      "laps_remaining": 0.736,
+      "stint": -0.006,
+      "position": 0.742,
+      "gap_ahead": 0.927,
+      "gap_behind": 0.945,
+      "pace_delta": 0.996,
+      "field_pitted_last2": 0.999,
+      "temp_change": 0.877
+    },
+    "importance_shap": {
+      "tyre_life": 0.7671999931335449,
+      "compound": 0.382999986410141,
+      "race_progress": 0.760699987411499,
+      "laps_remaining": 0.47360000014305115,
+      "stint": 0.13680000603199005,
+      "has_two_dry": 0.3621000051498413,
+      "position": 0.1671999990940094,
+      "gap_ahead": 0.21709999442100525,
+      "gap_behind": 0.1354999989271164,
+      "safety_car": 0.04780000075697899,
+      "vsc": 0.004900000058114529,
+      "sc_upcoming": 0.11999999731779099,
+      "yellow": 0.019500000402331352,
+      "pace_delta": 0.33250001072883606,
+      "field_pitted_last2": 0.31610000133514404,
+      "ahead_pitted": 0.009600000455975533,
+      "temp_change": 0.17389999330043793,
+      "rainfall": 0.0066999997943639755
+    },
+    "importance_ebm": {
+      "tyre_life": 1.19,
+      "compound": 0.5053,
+      "race_progress": 2.4091,
+      "laps_remaining": 1.4134,
+      "stint": 0.121,
+      "has_two_dry": 0.3034,
+      "position": 0.1349,
+      "gap_ahead": 0.2759,
+      "gap_behind": 0.1298,
+      "safety_car": 0.1546,
+      "vsc": 0.0177,
+      "sc_upcoming": 0.1843,
+      "yellow": 0.0299,
+      "pace_delta": 0.386,
+      "field_pitted_last2": 0.3931,
+      "ahead_pitted": 0.0045,
+      "temp_change": 0.2421,
+      "rainfall": 0.0264
+    }
+  },
+  "stability": {
+    "mean_pairwise_rank_spearman": 0.995,
+    "mean_pairwise_local_top3_jaccard": 0.855,
+    "importance_mean": {
+      "tyre_life": 0.7702000141143799,
+      "compound": 0.3822000026702881,
+      "race_progress": 0.7325999736785889,
+      "laps_remaining": 0.4781000018119812,
+      "stint": 0.13729999959468842,
+      "has_two_dry": 0.3560999929904938,
+      "position": 0.16359999775886536,
+      "gap_ahead": 0.21619999408721924,
+      "gap_behind": 0.13030000030994415,
+      "safety_car": 0.05130000039935112,
+      "vsc": 0.005499999970197678,
+      "sc_upcoming": 0.1251000016927719,
+      "yellow": 0.01850000023841858,
+      "pace_delta": 0.3328999876976013,
+      "field_pitted_last2": 0.3165000081062317,
+      "ahead_pitted": 0.010300000198185444,
+      "temp_change": 0.17710000276565552,
+      "rainfall": 0.006000000052154064
+    },
+    "importance_std": {
+      "tyre_life": 0.010999999940395355,
+      "compound": 0.007799999788403511,
+      "race_progress": 0.020800000056624413,
+      "laps_remaining": 0.010099999606609344,
+      "stint": 0.013299999758601189,
+      "has_two_dry": 0.003700000001117587,
+      "position": 0.002300000051036477,
+      "gap_ahead": 0.0052999998442828655,
+      "gap_behind": 0.003599999938160181,
+      "safety_car": 0.00419999985024333,
+      "vsc": 0.0008999999845400453,
+      "sc_upcoming": 0.0044999998062849045,
+      "yellow": 0.000699999975040555,
+      "pace_delta": 0.00430000014603138,
+      "field_pitted_last2": 0.006300000008195639,
+      "ahead_pitted": 0.000699999975040555,
+      "temp_change": 0.003000000026077032,
+      "rainfall": 0.0005000000237487257
+    }
+  },
+  "faithfulness": {
+    "k": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5
+    ],
+    "curves": {
+      "SHAP ranking": [
+        0.3891,
+        0.1827,
+        0.1141,
+        0.0782,
+        0.059,
+        0.0485
+      ],
+      "EBM ranking (applied to XGBoost)": [
+        0.3891,
+        0.2066,
+        0.1327,
+        0.0905,
+        0.0693,
+        0.0551
+      ],
+      "Random ranking": [
+        0.3891,
+        0.3559,
+        0.3283,
+        0.3014,
+        0.2757,
+        0.2582
+      ]
+    },
+    "n_laps": 1285
+  },
+  "shift": {
+    "importance_test": {
+      "tyre_life": 0.7671999931335449,
+      "compound": 0.382999986410141,
+      "race_progress": 0.760699987411499,
+      "laps_remaining": 0.47360000014305115,
+      "stint": 0.13680000603199005,
+      "has_two_dry": 0.3621000051498413,
+      "position": 0.1671999990940094,
+      "gap_ahead": 0.21709999442100525,
+      "gap_behind": 0.1354999989271164,
+      "safety_car": 0.04780000075697899,
+      "vsc": 0.004900000058114529,
+      "sc_upcoming": 0.11999999731779099,
+      "yellow": 0.019500000402331352,
+      "pace_delta": 0.33250001072883606,
+      "field_pitted_last2": 0.31610000133514404,
+      "ahead_pitted": 0.009600000455975533,
+      "temp_change": 0.17389999330043793,
+      "rainfall": 0.0066999997943639755
+    },
+    "importance_shift": {
+      "tyre_life": 0.7766000032424927,
+      "compound": 0.40070000290870667,
+      "race_progress": 0.692300021648407,
+      "laps_remaining": 0.482699990272522,
+      "stint": 0.13169999420642853,
+      "has_two_dry": 0.37049999833106995,
+      "position": 0.17710000276565552,
+      "gap_ahead": 0.2207999974489212,
+      "gap_behind": 0.1526000052690506,
+      "safety_car": 0.0471000000834465,
+      "vsc": 0.010200000368058681,
+      "sc_upcoming": 0.14630000293254852,
+      "yellow": 0.023000000044703484,
+      "pace_delta": 0.3248000144958496,
+      "field_pitted_last2": 0.29760000109672546,
+      "ahead_pitted": 0.010499999858438969,
+      "temp_change": 0.20180000364780426,
+      "rainfall": 0.004699999932199717
+    },
+    "importance_rank_spearman": 0.992,
+    "feature_mean_shift_sd": {
+      "tyre_life": -0.062,
+      "compound": -0.184,
+      "race_progress": -0.091,
+      "laps_remaining": 0.085,
+      "stint": 0.09,
+      "has_two_dry": 0.132,
+      "position": 0.078,
+      "gap_ahead": 0.162,
+      "gap_behind": 0.161,
+      "safety_car": -0.014,
+      "vsc": 0.131,
+      "sc_upcoming": 0.08,
+      "yellow": 0.103,
+      "pace_delta": 0.105,
+      "field_pitted_last2": 0.101,
+      "ahead_pitted": 0.001,
+      "temp_change": 0.205,
+      "rainfall": -0.056
+    }
+  },
+  "iterations": {
+    "v1 original (absolute temp, no SC-upcoming)": {
+      "pr_auc_mean": 0.3189,
+      "pr_auc_sd": 0.0048,
+      "features": [
+        "tyre_life",
+        "compound",
+        "race_progress",
+        "laps_remaining",
+        "stint",
+        "has_two_dry",
+        "position",
+        "gap_ahead",
+        "gap_behind",
+        "safety_car",
+        "vsc",
+        "yellow",
+        "pace_delta",
+        "field_pitted_last2",
+        "ahead_pitted",
+        "rainfall",
+        "track_temp"
+      ]
+    },
+    "v2 + SC/VSC deployed feature": {
+      "pr_auc_mean": 0.3297,
+      "pr_auc_sd": 0.0041,
+      "features": [
+        "tyre_life",
+        "compound",
+        "race_progress",
+        "laps_remaining",
+        "stint",
+        "has_two_dry",
+        "position",
+        "gap_ahead",
+        "gap_behind",
+        "safety_car",
+        "vsc",
+        "yellow",
+        "pace_delta",
+        "field_pitted_last2",
+        "ahead_pitted",
+        "rainfall",
+        "track_temp",
+        "sc_upcoming"
+      ]
+    },
+    "No temperature (control)": {
+      "pr_auc_mean": 0.34,
+      "pr_auc_sd": 0.0011,
+      "features": [
+        "tyre_life",
+        "compound",
+        "race_progress",
+        "laps_remaining",
+        "stint",
+        "has_two_dry",
+        "position",
+        "gap_ahead",
+        "gap_behind",
+        "safety_car",
+        "vsc",
+        "yellow",
+        "pace_delta",
+        "field_pitted_last2",
+        "ahead_pitted",
+        "rainfall",
+        "sc_upcoming"
+      ]
+    },
+    "v3 final (temp change instead of absolute)": {
+      "pr_auc_mean": 0.3164,
+      "pr_auc_sd": 0.0018,
+      "features": [
+        "tyre_life",
+        "compound",
+        "race_progress",
+        "laps_remaining",
+        "stint",
+        "has_two_dry",
+        "position",
+        "gap_ahead",
+        "gap_behind",
+        "safety_car",
+        "vsc",
+        "sc_upcoming",
+        "yellow",
+        "pace_delta",
+        "field_pitted_last2",
+        "ahead_pitted",
+        "temp_change",
+        "rainfall"
+      ]
+    }
+  }
+}
