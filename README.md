@@ -97,6 +97,8 @@ pip install -r requirements.txt
 python get_f1_data.py          # optional: data/f1_laps_2023_2026.csv is included; this re-downloads/updates it
 python run_pipeline.py         # features, models, explanations, evaluation, figures (~10–15 min)
 python case_studies.py         # case-study figures (edit CASES to change races)
+python case_studies.py --poster  # poster-sized versions of the case-study figures
+python poster_figures.py       # poster-sized importance and design-iteration figures
 python find_case_studies.py    # optional: shortlist of interesting moments in 2025–26
 streamlit run app.py           # the interactive replay app
 ```
@@ -167,6 +169,7 @@ F1-optimal threshold chosen on 2024 data.
 get_f1_data.py        download raw laps (run locally)
 run_pipeline.py       everything else, end to end
 case_studies.py       case-study figures
+poster_figures.py     poster versions of the importance and iteration figures
 find_case_studies.py  shortlist of interesting moments in the test seasons
 app.py                Streamlit replay app
 src/features.py       feature engineering and label
@@ -175,7 +178,7 @@ src/explain.py        SHAP/EBM explanations and the four evaluation experiments
 src/figures.py        figures
 tests/                synthetic data generator for testing
 results/              metrics.json, summary.md
-figures/              PNGs for the README and poster
+figures/              PNGs for the README (figures/poster/ for the poster)
 ```
 
 ## References
