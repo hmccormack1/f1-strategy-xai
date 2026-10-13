@@ -134,7 +134,7 @@ plentiful) and rain.
 
 Both explanations are in the same unit (log-odds of pitting), so they can be compared directly.
 
-**Metrics.** Pit laps are rare (about 7–8% of rows), so accuracy is misleading. The main metric is
+**Metrics.** Pit laps are rare (about 8–10% of rows, depending on the season), so accuracy is misleading. The main metric is
 **PR-AUC**, where random guessing scores the pit rate. Precision and recall are reported at an
 F1-optimal threshold chosen on 2024 data.
 

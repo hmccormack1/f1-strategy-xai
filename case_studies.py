@@ -5,8 +5,11 @@
 Writes figures/case_*.png and results/case_studies.md. Races not in the data are skipped.
 """
 import json
+import os
+import sys
 
 import joblib
+import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 
@@ -23,8 +26,15 @@ CASES = [
     dict(key="singapore", year=2026, event="Singapore Grand Prix", driver="VER", stop=None,
          role="Blind-spot gamble", subtitle="Pace management and track position: what the model can't see"),
     dict(key="stayed_out", year=2025, event="Italian Grand Prix", driver="NOR", focus=33,
-         role="Stayed out (fallback gamble)", subtitle="The model expected a stop; the team extended the stint"),
+         role="The gamble", subtitle="The model expected a stop; the team extended the stint"),
 ]
+# --poster: larger text and fewer bars, written to figures/poster/ (results/ untouched)
+POSTER = "--poster" in sys.argv
+POSTER_RC = {"font.size": 16, "axes.titlesize": 19, "axes.labelsize": 16, "xtick.labelsize": 15,
+             "ytick.labelsize": 15, "legend.fontsize": 15}
+FIG_DIR = "figures/poster" if POSTER else "figures"
+os.makedirs(FIG_DIR, exist_ok=True)
+
 COMP = {1: "Soft", 2: "Medium", 3: "Hard", 4: "Inter", 5: "Wet"}
 
 feat = pd.read_csv("data/features.csv")
@@ -54,11 +64,25 @@ for c in CASES:
     i = int(np.where(d["LapNumber"] == focus)[0][0])
     row = d.iloc[[i]]
     sv, ev = ex.shap_values(xgbm, row)[0], ex.ebm_contribs(ebm, row)[0]
-    order = np.argsort(-np.maximum(np.abs(sv), np.abs(ev)))[:6]
+    order = np.argsort(-np.maximum(np.abs(sv), np.abs(ev)))[:4 if POSTER else 6]
     names = [f"{SHORT_NAMES[FEATURE_COLS[j]]} = {row[FEATURE_COLS[j]].iloc[0]:.3g}" for j in order]
     title = f"{c['role']}: {c['event']} {c['year']}, {c['driver']}"
-    fg.case_study_panel(d, p, s_laps, thr["xgboost"], focus, names, sv[order], ev[order],
-                        title, c["subtitle"], f"figures/case_{c['key']}.png")
+    if POSTER:
+        o3 = np.argsort(-np.abs(sv))[:3]
+        n3 = [f"{SHORT_NAMES[FEATURE_COLS[j]]} = {row[FEATURE_COLS[j]].iloc[0]:.3g}" for j in o3]
+        with plt.rc_context(POSTER_RC):
+            fg.case_study_compact(d, p, s_laps, thr["xgboost"], focus, n3, sv[o3],
+                                  f"{c['event'].replace(' Grand Prix', ' GP')} {c['year']}, {c['driver']}",
+                                  f"{FIG_DIR}/case_{c['key']}_compact.png")
+    if POSTER:  # narrow version: three across in a band under the results
+        with plt.rc_context(POSTER_RC):
+            fg.case_study_panel(d, p, s_laps, thr["xgboost"], focus, names[:3], sv[order][:3], ev[order][:3],
+                                f"{c['event'].replace(' Grand Prix', ' GP')} {c['year']} · {c['driver']}", "",
+                                f"{FIG_DIR}/case_{c['key']}_narrow.png", figsize=(7.6, 5.6), hspace=0.8, legend=False)
+    with plt.rc_context(POSTER_RC if POSTER else {}):
+        fg.case_study_panel(d, p, s_laps, thr["xgboost"], focus, names, sv[order], ev[order],
+                            title, "" if POSTER else c["subtitle"], f"{FIG_DIR}/case_{c['key']}.png",
+                            figsize=(12, 5.7) if POSTER else (10, 6.2), hspace=0.75 if POSTER else 0.5)
     top_s = [SHORT_NAMES[FEATURE_COLS[j]] for j in np.argsort(-np.abs(sv))[:3]]
     top_e = [SHORT_NAMES[FEATURE_COLS[j]] for j in np.argsort(-np.abs(ev))[:3]]
     r = row.iloc[0]
@@ -72,4 +96,5 @@ for c in CASES:
             f"- EBM top 3: {', '.join(top_e)}",
             f"- Same top-3 set: {'yes' if set(top_s) == set(top_e) else 'no'}", ""]
     print(f"done: {title}")
-open("results/case_studies.md", "w").write("\n".join(out) + "\n")
+if not POSTER:
+    open("results/case_studies.md", "w").write("\n".join(out) + "\n")

@@ -21,7 +21,7 @@ Numbers behind figures/case_*.png. Probabilities are P(pit within 3 laps); XGBoo
 ## Blind-spot gamble: 2026 Singapore Grand Prix (VER)
 _Not in the data yet._
 
-## Stayed out (fallback gamble): 2025 Italian Grand Prix (NOR)
+## The gamble: 2025 Italian Grand Prix (NOR)
 - Actual stops: laps [46]
 - Explained lap 33: Medium tyres, 33 laps old; pace drop-off 0.23s; position 2; SC/VSC on upcoming lap: no
 - XGBoost P(pit) = 85%; EBM P(pit) = 66%

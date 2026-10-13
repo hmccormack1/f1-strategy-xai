@@ -26,10 +26,11 @@ def _save(fig, path):
     plt.close(fig)
 
 
-def importance_comparison(imp_a, imp_b, label_a, label_b, title, path, color_b=ORANGE, top_n=12):
+def importance_comparison(imp_a, imp_b, label_a, label_b, title, path, color_b=ORANGE, top_n=12,
+                          width=7.5, row_h=0.3):
     order = pd.Series(imp_a).sort_values().index[-top_n:]
     y = np.arange(len(order))
-    fig, ax = plt.subplots(figsize=(7.5, 0.3 * len(order) + 1.3))
+    fig, ax = plt.subplots(figsize=(width, row_h * len(order) + 1.3))
     for i, f in enumerate(order):
         ax.plot([imp_a[f], imp_b[f]], [i, i], color=GRID, lw=2, zorder=1)
     ax.scatter([imp_a[f] for f in order], y, s=60, color=BLUE, label=label_a, zorder=2, edgecolor=SURFACE, lw=1.5)
@@ -54,12 +55,12 @@ def shape_comparison(curves, path, title="How each feature pushes the pit predic
         ax.axhline(0, color=GRAY, lw=1)
         ax.plot(s["x"], s["c"], color=BLUE, marker="o", ms=4, label="XGBoost + SHAP")
         ax.plot(e["x"], e["c"], color=ORANGE, marker="o", ms=4, label="EBM (glass box)")
-        ax.set_title(SHORT_NAMES[f], fontsize=12)
+        ax.set_title(SHORT_NAMES[f], fontsize="large")
         ax.set_ylabel("Contribution (log-odds)")
     for ax in list(axes.flat)[n:]:
         ax.set_visible(False)
     axes.flat[0].legend(loc="upper left")
-    fig.suptitle(title, x=0.01, ha="left", fontweight="bold", fontsize=13)
+    fig.suptitle(title, x=0.01, ha="left", fontweight="bold", fontsize="large")
     _save(fig, path)
 
 
@@ -95,7 +96,7 @@ def performance_bars(metrics, seasons, path, metric="pr_auc", title="Pit predict
     for i, (key, label, color) in enumerate(names):
         vals = [metrics[key][s][metric] for s in seasons]
         bars = ax.bar(x + (i - 1) * w, vals, width=w - 0.02, color=color, label=label)
-        ax.bar_label(bars, fmt="%.2f", padding=2, color=INK2, fontsize=9)
+        ax.bar_label(bars, fmt="%.2f", padding=2, color=INK2, fontsize="small")
     rates = [metrics["xgboost"][s]["pit_rate"] for s in seasons]
     for xi, r in zip(x, rates):
         ax.hlines(r, xi - 1.5 * w, xi + 1.5 * w, color=INK2, lw=1, ls=":")
@@ -126,7 +127,7 @@ def race_timeline(df, probs, stops, threshold, path, title, highlight_lap=None):
     ax.set_ylabel("Probability")
     ax.set_ylim(0, 1)
     ax.set_title(title)
-    ax.legend(loc="upper left", fontsize=9)
+    ax.legend(loc="upper left", fontsize="small")
     if path is None:
         fig.tight_layout()
         return fig
@@ -145,22 +146,22 @@ def lap_explanation(names, shap_vals, ebm_vals, title="Why? Contribution of each
     ax.grid(axis="y", visible=False)
     ax.set_xlabel("← against pitting      contribution (log-odds)      toward pitting →")
     ax.set_title(title)
-    ax.legend(loc="lower right", fontsize=9)
+    ax.legend(loc="lower right", fontsize="small")
     fig.tight_layout()
     return fig
 
 
-def iterations_plot(result, path, title="Explanations led to a better model"):
+def iterations_plot(result, path, title="Explanations led to a better model", labels=None, figsize=(8.5, 3.6)):
     names = list(result)
     means = [result[n]["pr_auc_mean"] for n in names]
     sds = [result[n]["pr_auc_sd"] for n in names]
     colors = [BLUE if n.startswith("v3") else (GRAY if "control" in n else "#9dbfea") for n in names]
-    fig, ax = plt.subplots(figsize=(8.5, 3.6))
+    fig, ax = plt.subplots(figsize=figsize)
     y = np.arange(len(names))
     ax.barh(y, means, xerr=sds, height=0.6, color=colors, error_kw=dict(ecolor=INK2, capsize=3, lw=1))
     for yi, m, sd in zip(y, means, sds):
-        ax.text(m + sd + 0.006, yi, f"{m:.3f}", va="center", color=INK2, fontsize=10)
-    ax.set_yticks(y, names)
+        ax.text(m + sd + 0.006, yi, f"{m:.3f}", va="center", color=INK2, fontsize="small")
+    ax.set_yticks(y, [labels.get(n, n) for n in names] if labels else names)
     ax.invert_yaxis()
     ax.grid(axis="y", visible=False)
     ax.set_xlim(0, max(means) * 1.18)
@@ -169,10 +170,11 @@ def iterations_plot(result, path, title="Explanations led to a better model"):
     _save(fig, path)
 
 
-def case_study_panel(d, probs, stops, threshold, focus_lap, names, shap_vals, ebm_vals, title, subtitle, path):
+def case_study_panel(d, probs, stops, threshold, focus_lap, names, shap_vals, ebm_vals, title, subtitle, path,
+                     figsize=(10, 6.2), hspace=0.5, legend=True):
     """Two-row figure: race timeline (top) and the explanation at the focus lap (bottom)."""
-    fig = plt.figure(figsize=(10, 6.2))
-    gs = fig.add_gridspec(2, 1, height_ratios=[1, 1.1], hspace=0.5)
+    fig = plt.figure(figsize=figsize)
+    gs = fig.add_gridspec(2, 1, height_ratios=[1, 1.1], hspace=hspace)
     ax = fig.add_subplot(gs[0])
     laps = d["LapNumber"].values
     for lap, c in zip(laps, (d["safety_car"] | d["vsc"] | d["sc_upcoming"])):
@@ -182,14 +184,18 @@ def case_study_panel(d, probs, stops, threshold, focus_lap, names, shap_vals, eb
     ax.axhline(threshold, color=GRAY, lw=1, ls="--", label="Decision threshold")
     for i, s in enumerate(stops):
         ax.axvline(s, color=ORANGE, lw=2, label="Actual pit stop" if i == 0 else None)
-    ax.axvline(focus_lap, color=INK, lw=1, ls=":", label=f"Explained lap ({focus_lap})")
+    ax.axvline(focus_lap, color=INK, lw=1, ls=":")  # the lap explained below
     ax.set_ylim(0, 1.32)  # headroom so the legend sits above the curve
     ax.set_yticks([0, 0.2, 0.4, 0.6, 0.8, 1.0])
     ax.set_xlabel("Lap  (shaded = safety car / VSC)")
     ax.set_ylabel("Probability")
-    fig.suptitle(title, x=0.125, y=0.97, ha="left", fontweight="bold", fontsize=14)
-    ax.set_title(subtitle, fontsize=10.5, fontweight="normal", color=INK2)
-    ax.legend(loc="upper left", fontsize=8.5, ncol=4)
+    if subtitle:
+        fig.suptitle(title, x=0.125, y=0.97, ha="left", fontweight="bold", fontsize="large")
+        ax.set_title(subtitle, fontsize="medium", fontweight="normal", color=INK2)
+    else:
+        ax.set_title(title)
+    if legend:
+        ax.legend(loc="upper left", fontsize="small", ncol=3)
 
     bx = fig.add_subplot(gs[1])
     y = np.arange(len(names))
@@ -200,7 +206,45 @@ def case_study_panel(d, probs, stops, threshold, focus_lap, names, shap_vals, eb
     bx.invert_yaxis()
     bx.grid(axis="y", visible=False)
     bx.set_xlabel("← against pitting      contribution (log-odds)      toward pitting →")
-    bx.set_title(f"Why the model said what it did on lap {focus_lap}", fontsize=12)
-    bx.legend(loc="lower right", fontsize=9)
+    if legend:
+        bx.set_title(f"Why the model said what it did on lap {focus_lap}", fontsize="large")
+        bx.legend(loc="lower right", fontsize="small")
+    else:  # narrow: short title, legend in the title row
+        bx.set_title(f"Why, on lap {focus_lap}", fontsize="large", loc="left")
+        bx.legend(loc="lower right", bbox_to_anchor=(1.0, 1.0), ncol=2, fontsize="small",
+                  handlelength=1.2, columnspacing=1.0, borderaxespad=0.2)
+    fig.savefig(path, dpi=200, bbox_inches="tight")
+    plt.close(fig)
+
+
+def case_study_compact(d, probs, stops, threshold, focus_lap, names, shap_vals, title, path, figsize=(12, 4)):
+    """Side-by-side version for tight layouts: timeline left, SHAP reasons right."""
+    fig = plt.figure(figsize=figsize)
+    gs = fig.add_gridspec(1, 2, width_ratios=[1.45, 1], wspace=0.75)
+    ax = fig.add_subplot(gs[0])
+    laps = d["LapNumber"].values
+    for lap, c in zip(laps, (d["safety_car"] | d["vsc"] | d["sc_upcoming"])):
+        if c:
+            ax.axvspan(lap - 0.5, lap + 0.5, color="#eda100", alpha=0.18, lw=0)
+    ax.plot(laps, probs, color=BLUE, label="P(pit in next 3 laps)")
+    ax.axhline(threshold, color=GRAY, lw=1, ls="--")
+    for i, s in enumerate(stops):
+        ax.axvline(s, color=ORANGE, lw=2, label="Actual stop" if i == 0 else None)
+    ax.axvline(focus_lap, color=INK, lw=1, ls=":")
+    ax.set_ylim(0, 1.3)
+    ax.set_yticks([0, 0.5, 1.0])
+    ax.set_xlabel("Lap")
+    ax.set_title(title)
+    ax.legend(loc="upper left", ncol=2, fontsize="small")
+
+    bx = fig.add_subplot(gs[1])
+    y = np.arange(len(names))
+    bx.axvline(0, color=GRAY, lw=1)
+    bx.barh(y, shap_vals, height=0.6, color=[BLUE if v > 0 else GRAY for v in shap_vals])
+    bx.set_yticks(y, names)
+    bx.invert_yaxis()
+    bx.grid(axis="y", visible=False)
+    bx.set_xlabel("SHAP (→ toward pitting)")
+    bx.set_title(f"Why, on lap {focus_lap}")
     fig.savefig(path, dpi=200, bbox_inches="tight")
     plt.close(fig)
