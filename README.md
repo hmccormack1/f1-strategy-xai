@@ -103,7 +103,7 @@ python find_case_studies.py    # optional: shortlist of interesting moments in 2
 streamlit run app.py           # the interactive replay app
 ```
 
-No API keys are needed. Data comes from F1's public timing feed via the open-source
+On a Mac, XGBoost also needs OpenMP: `brew install libomp`. No API keys are needed. Data comes from F1's public timing feed via the open-source
 [FastF1](https://docs.fastf1.dev/) library. To test the code without downloading,
 `python tests/make_synthetic_data.py` creates fake data in the same format
 (`python run_pipeline.py --data data/synthetic_laps.csv --quick`).
